@@ -8,9 +8,13 @@
     <!-- Ladda ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Ladda bip39 -->
+    <!-- Ladda bip39 och ordlistan manuellt -->
     <script type="module">
         import { generateMnemonic, wordlists } from "https://cdn.jsdelivr.net/npm/bip39@3.0.4/+esm";
+        
+        // Se till att ordlistan laddas in korrekt
+        wordlists.english = await (await fetch("https://cdn.jsdelivr.net/npm/bip39@3.0.4/src/wordlists/english.json")).json();
+        
         window.generateMnemonic = () => generateMnemonic(wordlists.english);
     </script>
 </head>
