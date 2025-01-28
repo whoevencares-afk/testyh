@@ -8,10 +8,10 @@
     <!-- Ladda ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Ladda bip39 via ES6 kompatibel import -->
+    <!-- Ladda bip39 -->
     <script type="module">
-        import { generateMnemonic } from "https://cdn.jsdelivr.net/npm/bip39@3.0.4/+esm";
-        window.generateMnemonic = generateMnemonic;
+        import { generateMnemonic, wordlists } from "https://cdn.jsdelivr.net/npm/bip39@3.0.4/+esm";
+        window.generateMnemonic = () => generateMnemonic(wordlists.english);
     </script>
 </head>
 <body>
