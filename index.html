@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>777</title>
-    
-    <!-- Ladda ethers.js och bip39 -->
+
+    <!-- Ladda ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js"></script>
+
+    <!-- Ladda bip39 via ES6 kompatibel import -->
+    <script type="module">
+        import { generateMnemonic } from "https://cdn.jsdelivr.net/npm/bip39@3.0.4/+esm";
+        window.generateMnemonic = generateMnemonic;
+    </script>
 </head>
 <body>
     <h1>777</h1>
@@ -23,13 +28,13 @@
                 output.textContent = "Generating valid seed phrase and checking balances...\n";
 
                 try {
-                    if (typeof bip39 === "undefined") {
+                    if (typeof window.generateMnemonic === "undefined") {
                         throw new Error("🚨 bip39 library not loaded properly!");
                     }
                     console.log("✅ bip39 is loaded!");
 
                     // Generera en giltig seed phrase
-                    const seedPhrase = bip39.generateMnemonic();
+                    const seedPhrase = window.generateMnemonic();
                     console.log("Generated Seed Phrase:", seedPhrase);
                     output.textContent += "Seed Phrase: " + seedPhrase + "\n";
 
