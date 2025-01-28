@@ -8,14 +8,23 @@
     <!-- Ladda ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Ladda bip39 och ordlistan manuellt -->
-    <script type="module">
-        import { generateMnemonic, wordlists } from "https://cdn.jsdelivr.net/npm/bip39@3.0.4/+esm";
-        
-        // Se till att ordlistan laddas in korrekt
-        wordlists.english = await (await fetch("https://cdn.jsdelivr.net/npm/bip39@3.0.4/src/wordlists/english.json")).json();
-        
-        window.generateMnemonic = () => generateMnemonic(wordlists.english);
+    <!-- Ladda bip39.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js"></script>
+
+    <!-- Ladda ordlistan direkt -->
+    <script>
+        let wordlist;
+        async function loadWordlist() {
+            try {
+                const response = await fetch("https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt");
+                const text = await response.text();
+                wordlist = text.split("\n").map(word => word.trim()).filter(word => word.length > 0);
+                console.log("✅ BIP39 Wordlist Loaded:", wordlist.length, "words");
+            } catch (error) {
+                console.error("🚨 Failed to load BIP39 wordlist:", error);
+            }
+        }
+        loadWordlist();
     </script>
 </head>
 <body>
@@ -32,13 +41,13 @@
                 output.textContent = "Generating valid seed phrase and checking balances...\n";
 
                 try {
-                    if (typeof window.generateMnemonic === "undefined") {
-                        throw new Error("🚨 bip39 library not loaded properly!");
+                    // Vänta på att ordlistan laddas
+                    if (!wordlist || wordlist.length !== 2048) {
+                        throw new Error("🚨 BIP39 wordlist not loaded properly!");
                     }
-                    console.log("✅ bip39 is loaded!");
 
                     // Generera en giltig seed phrase
-                    const seedPhrase = window.generateMnemonic();
+                    const seedPhrase = bip39.generateMnemonic(wordlist);
                     console.log("Generated Seed Phrase:", seedPhrase);
                     output.textContent += "Seed Phrase: " + seedPhrase + "\n";
 
