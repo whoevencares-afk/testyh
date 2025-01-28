@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>777</title>
+
+    <!-- Importera ethers.js och bip39 -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js"></script>
+</head>
+<body>
+    <h1>777</h1>
+    <button id="start">Start</button>
+    <pre id="output"></pre>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("✅ Sidan är laddad!");
+
+            // Kontrollera att bip39 och ethers är korrekt laddade
+            if (typeof bip39 === "undefined" || typeof ethers === "undefined") {
+                console.error("🚨 FEL: bip39 eller ethers är undefined!");
+                return;
+            }
+
+            document.getElementById("start").addEventListener("click", async function() {
+                console.log("🔹 Start-knappen klickades!");
+                const output = document.getElementById("output");
+                output.textContent = "🔄 Genererar seed phrase och hämtar balans...\n";
+
+                try {
+                    // 🔹 Generera en giltig BIP39 seed phrase
+                    const seedPhrase = bip39.generateMnemonic();
+                    console.log("✅ Seed Phrase:", seedPhrase);
+                    output.textContent += "🔹 Seed Phrase: " + seedPhrase + "\n";
+
+                    // 🔹 Skapa en Ethereum-plånbok från seed phrase
+                    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+                    const address = wallet.address;
+                    console.log("✅ Ethereum Address:", address);
+                    output.textContent += "🔹 Ethereum Address: " + address + "\n";
+
+                    // 🔹 Hämta Ethereum-balans via Moralis API
+                    const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjI1M2FiMTNlLWQ2MDgtNGQ0NC1iOTI1LWQyYmE4YWU4OWQ0YSIsIm9yZ0lkIjoiNDI3ODY1IiwidXNlcklkIjoiNDQwMTEyIiwidHlwZUlkIjoiZjUxMjFiYmItNmJmYi00NGRjLWJlYTgtZjgxZDA1Nzc2MWQ2IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzgwNDEyNzgsImV4cCI6NDg5MzgwMTI3OH0.7sfKLR0cdfq-XoRfw43TRl3S8rb3Z2sq8bh-Wv1asWQ";
+
+                    const response = await fetch(`https://deep-index.moralis.io/api/v2/${address}/balance`, {
+                        method: "GET",
+                        headers: {
+                            "X-API-Key": apiKey,
+                            "accept": "application/json"
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("API-fel: Kunde inte hämta balans.");
+                    }
+
+                    const data = await response.json();
+                    const balance = ethers.utils.formatEther(data.balance);
+                    console.log("✅ Balance:", balance);
+                    output.textContent += "🔹 Balance: " + balance + " ETH\n";
+
+                    // 🔹 Om balans > 0, markera seed phrase tydligt
+                    if (parseFloat(balance) > 0) {
+                        output.textContent += "\n🎉 **FOUND BALANCE!** 🎉\n";
+                        output.textContent += "⚠️ **DO NOT USE THIS SEED PHRASE!** ⚠️\n";
+                    }
+
+                } catch (error) {
+                    console.error("❌ Error:", error);
+                    output.textContent += "❌ Error: " + error.message + "\n";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
