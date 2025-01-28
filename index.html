@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>777</title> <!-- Titel -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.min.js"></script>
+    <script type="module">
+        import { generateMnemonic } from "https://cdn.jsdelivr.net/npm/bip39@3.0.4/+esm";
+        window.generateMnemonic = generateMnemonic; // Gör funktionen tillgänglig globalt
+    </script>
 </head>
 <body>
     <h1>777</h1> <!-- Rubrik -->
@@ -19,7 +22,7 @@
 
             try {
                 // ✅ Generera en giltig BIP39 seed phrase
-                const seedPhrase = bip39.generateMnemonic();
+                const seedPhrase = window.generateMnemonic();
                 output.textContent += "Seed Phrase: " + seedPhrase + "\n";
 
                 // ✅ Skapa en riktig Ethereum-plånbok från seed phrase
