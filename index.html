@@ -3,65 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>777</title> <!-- Titel -->
+    <title>777</title>
+    
+    <!-- Lägg till ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+
+    <!-- Lägg till bip39.js -->
     <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js"></script>
 </head>
 <body>
-    <h1>777</h1> <!-- Rubrik -->
-    <button onclick="generateAndCheckBalance()">Start</button>
+    <h1>777</h1>
+    <button id="start">Start</button>
     <pre id="output"></pre>
 
     <script>
-        async function generateAndCheckBalance() {
-            const output = document.getElementById("output");
-            output.textContent = "Generating valid seed phrase and checking balances...\n";
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Sidan är laddad!");
 
-            try {
-                // ✅ Generera en giltig BIP39 seed phrase
-                const seedPhrase = bip39.generateMnemonic();
-                output.textContent += "Seed Phrase: " + seedPhrase + "\n";
-
-                // ✅ Skapa en riktig Ethereum-plånbok från seed phrase
-                const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-                const ethAddress = wallet.address;
-                output.textContent += "Ethereum Address: " + ethAddress + "\n";
-
-                // ✅ Moralis API-nyckel (INSATT HÄR)
-                const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjI1M2FiMTNlLWQ2MDgtNGQ0NC1iOTI1LWQyYmE4YWU4OWQ0YSIsIm9yZ0lkIjoiNDI3ODY1IiwidXNlcklkIjoiNDQwMTEyIiwidHlwZUlkIjoiZjUxMjFiYmItNmJmYi00NGRjLWJlYTgtZjgxZDA1Nzc2MWQ2IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzgwNDEyNzgsImV4cCI6NDg5MzgwMTI3OH0.7sfKLR0cdfq-XoRfw43TRl3S8rb3Z2sq8bh-Wv1asWQ";
-
-                // ✅ Blockkedjor att kolla saldo på
-                const chains = ["eth", "bsc", "polygon", "btc", "sol"];
-
-                for (let chain of chains) {
-                    try {
-                        output.textContent += `Checking ${chain.toUpperCase()} balance...\n`;
-
-                        const response = await fetch(`https://deep-index.moralis.io/api/v2/${ethAddress}/balance?chain=${chain}`, {
-                            headers: { "X-API-Key": apiKey }
-                        });
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            const balance = parseFloat(data.balance) / 10**18; // Konvertera till ETH/BTC
-                            output.textContent += `${chain.toUpperCase()} Balance: ${balance}\n`;
-
-                            // 🛑 Stoppa om en plånbok med saldo hittas
-                            if (balance > 0) {
-                                output.textContent += `\n=== BALANCE FOUND! ===\nChain: ${chain.toUpperCase()}\nSeed Phrase: ${seedPhrase}`;
-                                break;
-                            }
-                        } else {
-                            output.textContent += `Failed to fetch ${chain.toUpperCase()} balance (HTTP ${response.status})\n`;
-                        }
-                    } catch (error) {
-                        output.textContent += `\nError checking ${chain.toUpperCase()} balance: ${error.message}\n`;
-                    }
-                }
-            } catch (error) {
-                output.textContent += `\nFATAL ERROR: ${error.message}\n`;
+            // Kontrollera om bip39 har laddats korrekt
+            if (typeof bip39 === "undefined") {
+                console.error("🚨 FATAL ERROR: bip39 är undefined! Skriptet laddades inte korrekt.");
+                return; // Stoppa koden om bip39 saknas
             }
-        }
+            console.log("✅ bip39 är korrekt laddad!");
+
+            document.getElementById("start").addEventListener("click", async function() {
+                const output = document.getElementById("output");
+                output.textContent = "Generating valid seed phrase and checking balances...\n";
+
+                try {
+                    // Generera en giltig BIP39 seed phrase
+                    const seedPhrase = bip39.generateMnemonic();
+                    console.log("Generated Seed Phrase:", seedPhrase);
+                    output.textContent += "Seed Phrase: " + seedPhrase + "\n";
+
+                    // Skapa en Ethereum-plånbok från seed phrase
+                    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+                    const address = wallet.address;
+                    console.log("Generated Address:", address);
+                    output.textContent += "Ethereum Address: " + address + "\n";
+
+                    // Hämta Ethereum-balans via Moralis API
+                    const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjI1M2FiMTNlLWQ2MDgtNGQ0NC1iOTI1LWQyYmE4YWU4OWQ0YSIsIm9yZ0lkIjoiNDI3ODY1IiwidXNlcklkIjoiNDQwMTEyIiwidHlwZUlkIjoiZjUxMjFiYmItNmJmYi00NGRjLWJlYTgtZjgxZDA1Nzc2MWQ2IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzgwNDEyNzgsImV4cCI6NDg5MzgwMTI3OH0.7sfKLR0cdfq-XoRfw43TRl3S8rb3Z2sq8bh-Wv1asWQ";
+
+                    const response = await fetch(`https://deep-index.moralis.io/api/v2/${address}/balance`, {
+                        method: "GET",
+                        headers: {
+                            "X-API-Key": apiKey,
+                            "accept": "application/json"
+                        }
+                    });
+
+                    const data = await response.json();
+                    const balance = ethers.utils.formatEther(data.balance);
+                    console.log("Balance:", balance);
+                    output.textContent += "Balance: " + balance + " ETH\n";
+
+                    // Om balans > 0, stoppa programmet och visa seed phrase tydligt
+                    if (parseFloat(balance) > 0) {
+                        output.textContent += "\n🎉 FOUND BALANCE! 🎉\n";
+                        output.textContent += "⚠️ THIS SEED PHRASE HAS FUNDS! ⚠️\n";
+                        output.textContent += "🚨 DO NOT USE THIS SEED PHRASE! 🚨\n";
+                    }
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    output.textContent += "Error: " + error.message + "\n";
+                }
+            });
+        });
     </script>
 </body>
 </html>
