@@ -8,8 +8,21 @@
     <!-- Lägg till ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Lägg till bip39.js -->
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js"></script>
+    <!-- Lägg till bip39.js PÅ ETT NYTT SÄTT -->
+    <script>
+        let bip39;
+        async function loadBip39() {
+            try {
+                const module = await import("https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js");
+                bip39 = module;
+                console.log("✅ bip39 är laddad!", bip39);
+            } catch (error) {
+                alert("🚨 bip39 kunde inte laddas! Kontrollera din internetuppkoppling.");
+                console.error("bip39 Load Error:", error);
+            }
+        }
+        loadBip39();
+    </script>
 </head>
 <body>
     <h1>777</h1>
@@ -20,19 +33,15 @@
         document.addEventListener("DOMContentLoaded", function() {
             console.log("Sidan är laddad!");
 
-            // Kontrollera om bip39 har laddats korrekt
-            console.log("bip39:", typeof bip39);
-            if (typeof bip39 === "undefined") {
-                alert("🚨 bip39 är inte laddad! Kolla din internetuppkoppling eller om biblioteket är blockerat.");
-                return; // Stoppa koden om bip39 saknas
-            }
-            console.log("✅ bip39 är korrekt laddad!");
-
             document.getElementById("start").addEventListener("click", async function() {
                 const output = document.getElementById("output");
                 output.textContent = "Generating valid seed phrase and checking balances...\n";
 
                 try {
+                    if (!bip39) {
+                        throw new Error("🚨 bip39 library not loaded properly!");
+                    }
+
                     // Generera en giltig BIP39 seed phrase
                     const seedPhrase = bip39.generateMnemonic();
                     console.log("Generated Seed Phrase:", seedPhrase);
