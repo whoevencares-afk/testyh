@@ -1,12 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Min App</title>
-</head>
-<body>
-    <h1>Min Första App</h1>
-    <p>Hej världen!</p>
-</body>
-</html>
+const bip39 = require("bip39");
+const ethers = require("ethers");
+
+const provider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID");
+
+async function generateAndCheckBalance() {
+    while (true) {
+        const seedPhrase = bip39.generateMnemonic(128);
+        console.log("Seed Phrase:", seedPhrase);
+
+        const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+        const address = wallet.address;
+
+        console.log("Address:", address);
+
+        const balance = await provider.getBalance(address);
+        const balanceInEth = ethers.utils.formatEther(balance);
+        console.log("Balance:", balanceInEth, "ETH");
+
+        if (balance.gt(0)) {
+            console.log("\n=== ATTENTION ===");
+            console.log("Seed Phrase to avoid:", seedPhrase);
+            console.log("Address:", address);
+            console.log("Balance:", balanceInEth, "ETH");
+            console.log("=================\n");
+            break;
+        }
+    }
+}
+
+generateAndCheckBalance();
