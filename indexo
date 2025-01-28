@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seed Phrase Checker</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.min.js"></script>
+</head>
+<body>
+    <h1>Seed Phrase Checker</h1>
+    <button onclick="generateAndCheckBalance()">Start</button>
+    <pre id="output"></pre>
+
+    <script>
+        async function generateAndCheckBalance() {
+            const provider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID");
+            const output = document.getElementById("output");
+            
+            while (true) {
+                const seedPhrase = bip39.generateMnemonic();
+                output.textContent = "Seed Phrase: " + seedPhrase;
+
+                const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+                const address = wallet.address;
+
+                const balance = await provider.getBalance(address);
+                const balanceInEth = ethers.utils.formatEther(balance);
+                output.textContent += "\nAddress: " + address + "\nBalance: " + balanceInEth + " ETH";
+
+                if (balance > 0) {
+                    output.textContent += "\n=== FOUND A BALANCE ===\nSeed Phrase: " + seedPhrase;
+                    break;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
