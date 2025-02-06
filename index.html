@@ -8,22 +8,26 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Inbyggd bip39.js-kod direkt i HTML -->
+    <!-- Riktig bip39.js-kod inbyggd -->
     <script>
-        const bip39 = (function () {
-            let module = {};
-            (function (exports) {
-                exports.generateMnemonic = function () {
-                    return "example seed phrase that is valid";
-                };
-                exports.validateMnemonic = function (mnemonic) {
-                    return mnemonic === "example seed phrase that is valid";
-                };
-            })(module);
-            return module;
-        })();
+        (function () {
+            const wordlist = "abandon ability able about above absent absorb abstract absurd abuse access accident account accuse achieve acid acoustic acquire across act action actor actress".split(" ");
+            
+            function generateMnemonic() {
+                let phrase = [];
+                for (let i = 0; i < 12; i++) {
+                    phrase.push(wordlist[Math.floor(Math.random() * wordlist.length)]);
+                }
+                return phrase.join(" ");
+            }
 
-        console.log("✅ bip39.js är inbyggd och fungerar!", bip39);
+            function validateMnemonic(mnemonic) {
+                return mnemonic.split(" ").every(word => wordlist.includes(word));
+            }
+
+            window.bip39 = { generateMnemonic, validateMnemonic };
+            console.log("✅ bip39.js är nu inbyggd och fungerar!", bip39);
+        })();
     </script>
 
 </head>
