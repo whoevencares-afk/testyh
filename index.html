@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>77777 Debug</title>
+    <title>77777 Debug Advanced</title>
 
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
@@ -16,7 +16,8 @@
 
         async function loadBip39() {
             try {
-                logDebug("🔄 Laddar bip39.js...");
+                logDebug("🔄 Startar laddning av bip39.js...");
+
                 let script = document.createElement("script");
                 script.src = "https://whoevencares-afk.github.io/bip39.js?t=" + new Date().getTime();
                 script.onload = function() {
@@ -24,9 +25,10 @@
                     testBip39();
                 };
                 script.onerror = function() {
-                    logDebug("❌ FELKOD 1: bip39.js kunde INTE laddas! Kolla om länken funkar.");
+                    logDebug("❌ FELKOD 1: bip39.js kunde INTE laddas! Kontrollera URL och server.");
                 };
                 document.head.appendChild(script);
+
             } catch (error) {
                 logDebug("❌ FELKOD 2: Error vid dynamisk laddning av bip39.js: " + error);
             }
@@ -45,15 +47,36 @@
                     return;
                 }
 
-                logDebug("✅ bip39 fungerar som förväntat!");
+                logDebug("✅ bip39 fungerar korrekt!");
+                document.getElementById("start").disabled = false; // Aktivera start-knappen
             }, 2000);
         }
 
-        loadBip39();
+        document.addEventListener("DOMContentLoaded", function() {
+            logDebug("🌍 DOM är laddad!");
+            document.getElementById("start").disabled = true; // Inaktivera start-knappen
+            loadBip39();
+        });
+
+        document.getElementById("start").addEventListener("click", function() {
+            logDebug("▶️ Start-knappen klickad!");
+
+            if (typeof bip39 === "undefined") {
+                logDebug("❌ FELKOD 5: bip39.js verkar aldrig ha laddats in!");
+                return;
+            }
+
+            try {
+                const seedPhrase = bip39.generateMnemonic();
+                logDebug("✅ Seed phrase genererad: " + seedPhrase);
+            } catch (error) {
+                logDebug("❌ FELKOD 6: bip39.js finns men kraschar vid användning: " + error);
+            }
+        });
     </script>
 </head>
 <body>
-    <h1>77777 Debug Mode</h1>
+    <h1>77777 Debug Advanced</h1>
     <button id="start">Start</button>
     <pre id="debug-output"></pre>
 </body>
