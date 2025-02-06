@@ -8,15 +8,33 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Ladda bip39 från GitHub Pages -->
-    <script src="https://whoevencares-afk.github.io/bip39.js" defer onerror="bip39LoadError()"></script>
+    <!-- Dynamisk laddning av bip39.js -->
+    <script>
+        async function loadBip39() {
+            try {
+                let script = document.createElement("script");
+                script.src = "https://whoevencares-afk.github.io/bip39.js"; // Se till att URL är korrekt
+                script.onload = function() {
+                    console.log("✅ bip39.js laddad!", bip39);
+                };
+                script.onerror = function() {
+                    console.error("🚨 bip39.js kunde inte laddas!");
+                    alert("🚨 bip39.js kunde inte laddas! Kontrollera att filen finns på rätt plats.");
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                console.error("🚨 Fel vid laddning av bip39.js", error);
+            }
+        }
+        loadBip39();
+    </script>
+</head>
+<body>
+    <h1>77777</h1>
+    <button id="start">Start</button>
+    <pre id="output"></pre>
 
     <script>
-        function bip39LoadError() {
-            console.error("🚨 bip39.js kunde inte laddas!");
-            alert("🚨 bip39.js kunde inte laddas! Kontrollera att filen finns på rätt plats.");
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
             console.log("Sidan är laddad!");
 
@@ -89,10 +107,5 @@
             }, 2000); // Vänta 2 sekunder för att säkerställa att bip39.js har laddats
         });
     </script>
-</head>
-<body>
-    <h1>77777</h1>
-    <button id="start">Start</button>
-    <pre id="output"></pre>
 </body>
 </html>
