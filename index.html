@@ -3,63 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4444 Ultimate</title>
+    <title>4444 Ultimate Fixed</title>
 
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js kod direkt inbyggd -->
-    <script>
-        (function () {
-            const wordlist = [
-                "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", 
-                "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act"
-            ];
-
-            function getRandomBytes(size) {
-                let bytes = new Uint8Array(size);
-                window.crypto.getRandomValues(bytes);
-                return Array.from(bytes);
-            }
-
-            function generateMnemonic() {
-                let phrase = [];
-                let entropy = getRandomBytes(16); // 128-bit entropy
-                for (let i = 0; i < 12; i++) {
-                    phrase.push(wordlist[entropy[i] % wordlist.length]);
-                }
-                return phrase.join(" ");
-            }
-
-            function validateMnemonic(mnemonic) {
-                return mnemonic.split(" ").every(word => wordlist.includes(word));
-            }
-
-            window.bip39 = { generateMnemonic, validateMnemonic };
-            console.log("✅ bip39.js är nu inbyggd och fungerar!", bip39);
-        })();
-    </script>
+    <!-- bip39.js direkt från CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.browser.min.js"></script>
 
 </head>
 <body>
-    <h1>4444 Ultimate</h1>
+    <h1>4444 Ultimate Fixed</h1>
     <button id="start">Start</button>
     <pre id="output"></pre>
 
     <script>
-        document.getElementById("start").addEventListener("click", function() {
+        document.getElementById("start").addEventListener("click", async function() {
             const output = document.getElementById("output");
             output.textContent = "Generating valid seed phrase...\n";
 
             try {
+                if (!window.bip39) {
+                    throw new Error("🚨 bip39.js kunde inte laddas!");
+                }
+
+                // Generera en riktig BIP-39 mnemonic med checksum
                 const seedPhrase = bip39.generateMnemonic();
                 console.log("Generated Seed Phrase:", seedPhrase);
                 output.textContent += "Seed Phrase: " + seedPhrase + "\n";
 
+                // Kontrollera att den är giltig
                 if (!bip39.validateMnemonic(seedPhrase)) {
-                    throw new Error("🚨 Ogiltig seed phrase genererad!");
+                    throw new Error("🚨 Seed phrase är ogiltig!");
                 }
 
+                // Skapa en Ethereum-plånbok från seed phrase
                 const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
                 const address = wallet.address;
                 console.log("Generated Address:", address);
