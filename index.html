@@ -8,46 +8,59 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js inbyggd -->
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.browser.min.js"></script>
-
+    <!-- bip39.js -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("✅ bip39.js laddad!", bip39);
-
-            document.getElementById("start").addEventListener("click", async function() {
-                const output = document.getElementById("output");
-                output.textContent = "Generating valid seed phrase...\n";
-
-                try {
-                    // Generera en riktig slumpmässig seed phrase
-                    const seedPhrase = bip39.generateMnemonic();
-                    console.log("Generated Seed Phrase:", seedPhrase);
-                    output.textContent += "Seed Phrase: " + seedPhrase + "\n";
-
-                    // Validera att den är korrekt
-                    if (!bip39.validateMnemonic(seedPhrase)) {
-                        throw new Error("🚨 Ogiltig seed phrase genererad!");
-                    }
-
-                    // Skapa en Ethereum-plånbok från seed phrase
-                    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-                    const address = wallet.address;
-                    console.log("Generated Address:", address);
-                    output.textContent += "Ethereum Address: " + address + "\n";
-
-                } catch (error) {
-                    console.error("Error:", error);
-                    output.textContent += "Error: " + error.message + "\n";
-                }
-            });
-        });
+        async function loadBip39() {
+            try {
+                const module = await import("https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.browser.min.js");
+                window.bip39 = module;
+                console.log("✅ bip39.js laddad!", bip39);
+                document.getElementById("start").disabled = false;
+            } catch (error) {
+                console.error("🚨 bip39.js kunde inte laddas!", error);
+                alert("🚨 bip39.js kunde inte laddas! Testa att ladda om sidan.");
+            }
+        }
+        loadBip39();
     </script>
 
 </head>
 <body>
     <h1>77777 Standalone</h1>
-    <button id="start">Start</button>
+    <button id="start" disabled>Start</button>
     <pre id="output"></pre>
+
+    <script>
+        document.getElementById("start").addEventListener("click", async function() {
+            const output = document.getElementById("output");
+            output.textContent = "Generating valid seed phrase...\n";
+
+            try {
+                if (!window.bip39 || !bip39.generateMnemonic) {
+                    throw new Error("🚨 bip39.js är inte korrekt laddad!");
+                }
+
+                // Generera en riktig slumpmässig seed phrase
+                const seedPhrase = bip39.generateMnemonic();
+                console.log("Generated Seed Phrase:", seedPhrase);
+                output.textContent += "Seed Phrase: " + seedPhrase + "\n";
+
+                // Validera att den är korrekt
+                if (!bip39.validateMnemonic(seedPhrase)) {
+                    throw new Error("🚨 Ogiltig seed phrase genererad!");
+                }
+
+                // Skapa en Ethereum-plånbok från seed phrase
+                const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+                const address = wallet.address;
+                console.log("Generated Address:", address);
+                output.textContent += "Ethereum Address: " + address + "\n";
+
+            } catch (error) {
+                console.error("Error:", error);
+                output.textContent += "Error: " + error.message + "\n";
+            }
+        });
+    </script>
 </body>
 </html>
