@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4444 Final</title>
+    <title>4444 Ultimate</title>
 
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js direkt inbyggd -->
+    <!-- bip39.js kod direkt inbyggd -->
     <script>
         (function () {
             const wordlist = [
@@ -16,10 +16,17 @@
                 "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act"
             ];
 
+            function getRandomBytes(size) {
+                let bytes = new Uint8Array(size);
+                window.crypto.getRandomValues(bytes);
+                return Array.from(bytes);
+            }
+
             function generateMnemonic() {
                 let phrase = [];
+                let entropy = getRandomBytes(16); // 128-bit entropy
                 for (let i = 0; i < 12; i++) {
-                    phrase.push(wordlist[Math.floor(Math.random() * wordlist.length)]);
+                    phrase.push(wordlist[entropy[i] % wordlist.length]);
                 }
                 return phrase.join(" ");
             }
@@ -35,7 +42,7 @@
 
 </head>
 <body>
-    <h1>4444 Final</h1>
+    <h1>4444 Ultimate</h1>
     <button id="start">Start</button>
     <pre id="output"></pre>
 
