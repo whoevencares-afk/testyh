@@ -8,25 +8,18 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Dynamisk laddning av bip39.js -->
+    <!-- bip39.js -->
+    <script src="https://whoevencares-afk.github.io/bip39.js"></script>
+
     <script>
-        async function loadBip39() {
-            try {
-                let script = document.createElement("script");
-                script.src = "https://whoevencares-afk.github.io/bip39.js"; // Se till att URL är korrekt
-                script.onload = function() {
-                    console.log("✅ bip39.js laddad!", bip39);
-                };
-                script.onerror = function() {
-                    console.error("🚨 bip39.js kunde inte laddas!");
-                    alert("🚨 bip39.js kunde inte laddas! Kontrollera att filen finns på rätt plats.");
-                };
-                document.head.appendChild(script);
-            } catch (error) {
-                console.error("🚨 Fel vid laddning av bip39.js", error);
+        setTimeout(() => {
+            if (typeof bip39 !== "undefined") {
+                console.log("✅ bip39.js är laddad korrekt!", bip39);
+            } else {
+                console.error("🚨 bip39 är undefined!");
+                alert("🚨 bip39.js är undefined! Något i koden hindrar den från att fungera.");
             }
-        }
-        loadBip39();
+        }, 2000);
     </script>
 </head>
 <body>
@@ -37,74 +30,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             console.log("Sidan är laddad!");
-
-            setTimeout(() => {
-                if (typeof bip39 === "undefined") {
-                    console.error("🚨 bip39 är fortfarande undefined!");
-                    alert("🚨 bip39.js verkar inte fungera! Ladda om sidan eller kontrollera filens URL.");
-                    return;
-                }
-                
-                console.log("✅ bip39 är laddad!", bip39);
-
-                document.getElementById("start").addEventListener("click", async function() {
-                    const output = document.getElementById("output");
-                    output.textContent = "Generating valid seed phrase and checking balances...\n";
-
-                    try {
-                        if (!bip39 || !bip39.generateMnemonic) {
-                            throw new Error("🚨 bip39 library not loaded properly!");
-                        }
-
-                        // Generera en giltig BIP39 seed phrase
-                        const seedPhrase = bip39.generateMnemonic();
-                        console.log("Generated Seed Phrase:", seedPhrase);
-                        output.textContent += "Seed Phrase: " + seedPhrase + "\n";
-
-                        // Validera seed phrase
-                        if (!bip39.validateMnemonic(seedPhrase)) {
-                            throw new Error("🚨 Ogiltig seed phrase genererad!");
-                        }
-
-                        // Skapa en Ethereum-plånbok från seed phrase
-                        const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-                        const address = wallet.address;
-                        console.log("Generated Address:", address);
-                        output.textContent += "Ethereum Address: " + address + "\n";
-
-                        // Hämta Ethereum-balans via Moralis API
-                        const apiKey = "DIN_API_NYCKEL_HÄR"; // Lägg in din API-nyckel här
-
-                        const response = await fetch(`https://deep-index.moralis.io/api/v2/${address}/balance`, {
-                            method: "GET",
-                            headers: {
-                                "X-API-Key": apiKey,
-                                "accept": "application/json"
-                            }
-                        });
-
-                        if (!response.ok) {
-                            throw new Error("🚨 Misslyckades med att hämta balans från Moralis API!");
-                        }
-
-                        const data = await response.json();
-                        const balance = data.balance ? ethers.utils.formatEther(data.balance) : "0";
-                        console.log("Balance:", balance);
-                        output.textContent += "Balance: " + balance + " ETH\n";
-
-                        // Om balans > 0, stoppa programmet och visa seed phrase tydligt
-                        if (parseFloat(balance) > 0) {
-                            output.textContent += "\n🎉 FOUND BALANCE! 🎉\n";
-                            output.textContent += "⚠️ THIS SEED PHRASE HAS FUNDS! ⚠️\n";
-                            output.textContent += "🚨 DO NOT USE THIS SEED PHRASE! 🚨\n";
-                        }
-
-                    } catch (error) {
-                        console.error("Error:", error);
-                        output.textContent += "Error: " + error.message + "\n";
-                    }
-                });
-            }, 2000); // Vänta 2 sekunder för att säkerställa att bip39.js har laddats
         });
     </script>
 </body>
