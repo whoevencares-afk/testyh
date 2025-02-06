@@ -8,30 +8,30 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js -->
-    <script src="https://unpkg.com/bip39@3.0.4/browser/bip39.min.js"></script>
-
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("bip39 status:", typeof bip39 !== "undefined" ? "✅ Laddad" : "❌ Ej laddad");
-        });
-    </script>
-</head>
-<body>
-    <h1>777</h1>
-    <button id="start">Start</button>
-    <pre id="output"></pre>
+        let bip39; // Global variabel för bip39
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        async function loadBip39() {
+            try {
+                const module = await import("https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js");
+                bip39 = module; // Tilldela modulen till den globala variabeln
+                console.log("✅ bip39 laddad!", bip39);
+            } catch (error) {
+                console.error("🚨 bip39 kunde inte laddas!", error);
+                alert("🚨 bip39 kunde inte laddas! Kontrollera internetuppkopplingen.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
             console.log("Sidan är laddad!");
+            await loadBip39(); // Ladda bip39 innan programmet körs
 
             document.getElementById("start").addEventListener("click", async function() {
                 const output = document.getElementById("output");
                 output.textContent = "Generating valid seed phrase and checking balances...\n";
 
                 try {
-                    if (typeof bip39 === "undefined" || !bip39.generateMnemonic) {
+                    if (!bip39 || !bip39.generateMnemonic) {
                         throw new Error("🚨 bip39 library not loaded properly!");
                     }
 
@@ -85,5 +85,10 @@
             });
         });
     </script>
+</head>
+<body>
+    <h1>777</h1>
+    <button id="start">Start</button>
+    <pre id="output"></pre>
 </body>
 </html>
