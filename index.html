@@ -8,36 +8,79 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
+    <!-- bip39.js -->
+    <script src="https://whoevencares-afk.github.io/bip39.js"></script>
+
     <script>
-        async function loadBip39() {
+        document.addEventListener("DOMContentLoaded", async function() {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
             if (typeof bip39 === "undefined") {
-                console.log("⏳ Laddar bip39.js...");
-                let script = document.createElement("script");
-                script.src = "https://whoevencares-afk.github.io/bip39.js";
-                script.onload = function() {
-                    console.log("✅ bip39.js laddad!");
-                };
-                script.onerror = function() {
-                    console.error("🚨 bip39.js kunde inte laddas!");
-                    alert("🚨 bip39.js kunde inte laddas! Kontrollera att filen finns på rätt plats.");
-                };
-                document.head.appendChild(script);
-            } else {
-                console.log("✅ bip39.js var redan laddad!");
+                console.error("🚨 bip39.js verkar inte fungera!");
+                alert("🚨 bip39.js verkar inte fungera! Ladda om sidan eller kontrollera filens URL.");
+                return;
             }
-        }
-        loadBip39();
+
+            console.log("✅ bip39 är laddad!", bip39);
+
+            document.getElementById("start").addEventListener("click", async function() {
+                const output = document.getElementById("output");
+                output.textContent = "Generating valid seed phrase and checking balances...\n";
+
+                try {
+                    if (!bip39 || !bip39.generateMnemonic) {
+                        throw new Error("🚨 bip39 library not loaded properly!");
+                    }
+
+                    const seedPhrase = bip39.generateMnemonic();
+                    console.log("Generated Seed Phrase:", seedPhrase);
+                    output.textContent += "Seed Phrase: " + seedPhrase + "\n";
+
+                    if (!bip39.validateMnemonic(seedPhrase)) {
+                        throw new Error("🚨 Ogiltig seed phrase genererad!");
+                    }
+
+                    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+                    const address = wallet.address;
+                    console.log("Generated Address:", address);
+                    output.textContent += "Ethereum Address: " + address + "\n";
+
+                    const apiKey = "DIN_API_NYCKEL_HÄR";
+
+                    const response = await fetch(`https://deep-index.moralis.io/api/v2/${address}/balance`, {
+                        method: "GET",
+                        headers: {
+                            "X-API-Key": apiKey,
+                            "accept": "application/json"
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("🚨 Misslyckades med att hämta balans från Moralis API!");
+                    }
+
+                    const data = await response.json();
+                    const balance = data.balance ? ethers.utils.formatEther(data.balance) : "0";
+                    console.log("Balance:", balance);
+                    output.textContent += "Balance: " + balance + " ETH\n";
+
+                    if (parseFloat(balance) > 0) {
+                        output.textContent += "\n🎉 FOUND BALANCE! 🎉\n";
+                        output.textContent += "⚠️ THIS SEED PHRASE HAS FUNDS! ⚠️\n";
+                        output.textContent += "🚨 DO NOT USE THIS SEED PHRASE! 🚨\n";
+                    }
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    output.textContent += "Error: " + error.message + "\n";
+                }
+            });
+        });
     </script>
 </head>
 <body>
     <h1>77777</h1>
     <button id="start">Start</button>
     <pre id="output"></pre>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("Sidan är laddad!");
-        });
-    </script>
 </body>
 </html>
