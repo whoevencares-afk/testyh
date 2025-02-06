@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>777</title>
+    <title>888</title>
 
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
@@ -11,15 +11,17 @@
     <!-- Ladda bip39 från GitHub Pages -->
     <script src="https://whoevencares-afk.github.io/bip39.js"></script>
 
-</head>
-<body>
-    <h1>777</h1>
-    <button id="start">Start</button>
-    <pre id="output"></pre>
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             console.log("Sidan är laddad!");
+
+            if (typeof bip39 === "undefined") {
+                console.error("🚨 bip39 kunde inte laddas!");
+                alert("🚨 bip39.js kunde inte laddas! Testa att ladda om sidan.");
+                return;
+            }
+
+            console.log("✅ bip39 är laddad!", bip39);
 
             document.getElementById("start").addEventListener("click", async function() {
                 const output = document.getElementById("output");
@@ -80,5 +82,10 @@
             });
         });
     </script>
+</head>
+<body>
+    <h1>888</h1>
+    <button id="start">Start</button>
+    <pre id="output"></pre>
 </body>
 </html>
