@@ -8,18 +8,25 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js -->
-    <script src="https://whoevencares-afk.github.io/bip39.js"></script>
-
     <script>
-        setTimeout(() => {
-            if (typeof bip39 !== "undefined") {
-                console.log("✅ bip39.js är laddad korrekt!", bip39);
+        async function loadBip39() {
+            if (typeof bip39 === "undefined") {
+                console.log("⏳ Laddar bip39.js...");
+                let script = document.createElement("script");
+                script.src = "https://whoevencares-afk.github.io/bip39.js";
+                script.onload = function() {
+                    console.log("✅ bip39.js laddad!");
+                };
+                script.onerror = function() {
+                    console.error("🚨 bip39.js kunde inte laddas!");
+                    alert("🚨 bip39.js kunde inte laddas! Kontrollera att filen finns på rätt plats.");
+                };
+                document.head.appendChild(script);
             } else {
-                console.error("🚨 bip39 är undefined!");
-                alert("🚨 bip39.js är undefined! Något i koden hindrar den från att fungera.");
+                console.log("✅ bip39.js var redan laddad!");
             }
-        }, 2000);
+        }
+        loadBip39();
     </script>
 </head>
 <body>
