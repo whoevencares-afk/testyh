@@ -8,9 +8,14 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js (bytt CDN-länk) -->
+    <!-- bip39.js -->
     <script src="https://unpkg.com/bip39@3.0.4/browser/bip39.min.js"></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("bip39 status:", typeof bip39 !== "undefined" ? "✅ Laddad" : "❌ Ej laddad");
+        });
+    </script>
 </head>
 <body>
     <h1>777</h1>
@@ -26,7 +31,7 @@
                 output.textContent = "Generating valid seed phrase and checking balances...\n";
 
                 try {
-                    if (!bip39 || !bip39.generateMnemonic) {
+                    if (typeof bip39 === "undefined" || !bip39.generateMnemonic) {
                         throw new Error("🚨 bip39 library not loaded properly!");
                     }
 
