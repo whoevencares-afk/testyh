@@ -8,23 +8,18 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
+    <!-- Ladda bip39 från GitHub Pages -->
+    <script src="https://whoevencares-afk.github.io/bip39.js"></script>
+
+</head>
+<body>
+    <h1>777</h1>
+    <button id="start">Start</button>
+    <pre id="output"></pre>
+
     <script>
-        let bip39; // Global variabel för bip39
-
-        async function loadBip39() {
-            try {
-                const module = await import("https://cdn.jsdelivr.net/npm/bip39@3.0.4/browser/bip39.min.js");
-                bip39 = module; // Tilldela modulen till den globala variabeln
-                console.log("✅ bip39 laddad!", bip39);
-            } catch (error) {
-                console.error("🚨 bip39 kunde inte laddas!", error);
-                alert("🚨 bip39 kunde inte laddas! Kontrollera internetuppkopplingen.");
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", async function() {
+        document.addEventListener("DOMContentLoaded", function() {
             console.log("Sidan är laddad!");
-            await loadBip39(); // Ladda bip39 innan programmet körs
 
             document.getElementById("start").addEventListener("click", async function() {
                 const output = document.getElementById("output");
@@ -85,10 +80,5 @@
             });
         });
     </script>
-</head>
-<body>
-    <h1>777</h1>
-    <button id="start">Start</button>
-    <pre id="output"></pre>
 </body>
 </html>
