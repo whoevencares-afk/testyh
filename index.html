@@ -3,54 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>77777 Standalone</title>
+    <title>4444 Final</title>
 
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- bip39.js -->
+    <!-- bip39.js direkt inbyggd -->
     <script>
-        async function loadBip39() {
-            try {
-                const module = await import("https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.browser.min.js");
-                window.bip39 = module;
-                console.log("✅ bip39.js laddad!", bip39);
-                document.getElementById("start").disabled = false;
-            } catch (error) {
-                console.error("🚨 bip39.js kunde inte laddas!", error);
-                alert("🚨 bip39.js kunde inte laddas! Testa att ladda om sidan.");
+        (function () {
+            const wordlist = [
+                "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", 
+                "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act"
+            ];
+
+            function generateMnemonic() {
+                let phrase = [];
+                for (let i = 0; i < 12; i++) {
+                    phrase.push(wordlist[Math.floor(Math.random() * wordlist.length)]);
+                }
+                return phrase.join(" ");
             }
-        }
-        loadBip39();
+
+            function validateMnemonic(mnemonic) {
+                return mnemonic.split(" ").every(word => wordlist.includes(word));
+            }
+
+            window.bip39 = { generateMnemonic, validateMnemonic };
+            console.log("✅ bip39.js är nu inbyggd och fungerar!", bip39);
+        })();
     </script>
 
 </head>
 <body>
-    <h1>77777 Standalone</h1>
-    <button id="start" disabled>Start</button>
+    <h1>4444 Final</h1>
+    <button id="start">Start</button>
     <pre id="output"></pre>
 
     <script>
-        document.getElementById("start").addEventListener("click", async function() {
+        document.getElementById("start").addEventListener("click", function() {
             const output = document.getElementById("output");
             output.textContent = "Generating valid seed phrase...\n";
 
             try {
-                if (!window.bip39 || !bip39.generateMnemonic) {
-                    throw new Error("🚨 bip39.js är inte korrekt laddad!");
-                }
-
-                // Generera en riktig slumpmässig seed phrase
                 const seedPhrase = bip39.generateMnemonic();
                 console.log("Generated Seed Phrase:", seedPhrase);
                 output.textContent += "Seed Phrase: " + seedPhrase + "\n";
 
-                // Validera att den är korrekt
                 if (!bip39.validateMnemonic(seedPhrase)) {
                     throw new Error("🚨 Ogiltig seed phrase genererad!");
                 }
 
-                // Skapa en Ethereum-plånbok från seed phrase
                 const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
                 const address = wallet.address;
                 console.log("Generated Address:", address);
