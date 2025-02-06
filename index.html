@@ -8,26 +8,40 @@
     <!-- ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <!-- Riktig bip39.js-kod inbyggd -->
+    <!-- bip39.js inbyggd -->
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.0.4/dist/bip39.browser.min.js"></script>
+
     <script>
-        (function () {
-            const wordlist = "abandon ability able about above absent absorb abstract absurd abuse access accident account accuse achieve acid acoustic acquire across act action actor actress".split(" ");
-            
-            function generateMnemonic() {
-                let phrase = [];
-                for (let i = 0; i < 12; i++) {
-                    phrase.push(wordlist[Math.floor(Math.random() * wordlist.length)]);
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("✅ bip39.js laddad!", bip39);
+
+            document.getElementById("start").addEventListener("click", async function() {
+                const output = document.getElementById("output");
+                output.textContent = "Generating valid seed phrase...\n";
+
+                try {
+                    // Generera en riktig slumpmässig seed phrase
+                    const seedPhrase = bip39.generateMnemonic();
+                    console.log("Generated Seed Phrase:", seedPhrase);
+                    output.textContent += "Seed Phrase: " + seedPhrase + "\n";
+
+                    // Validera att den är korrekt
+                    if (!bip39.validateMnemonic(seedPhrase)) {
+                        throw new Error("🚨 Ogiltig seed phrase genererad!");
+                    }
+
+                    // Skapa en Ethereum-plånbok från seed phrase
+                    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+                    const address = wallet.address;
+                    console.log("Generated Address:", address);
+                    output.textContent += "Ethereum Address: " + address + "\n";
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    output.textContent += "Error: " + error.message + "\n";
                 }
-                return phrase.join(" ");
-            }
-
-            function validateMnemonic(mnemonic) {
-                return mnemonic.split(" ").every(word => wordlist.includes(word));
-            }
-
-            window.bip39 = { generateMnemonic, validateMnemonic };
-            console.log("✅ bip39.js är nu inbyggd och fungerar!", bip39);
-        })();
+            });
+        });
     </script>
 
 </head>
@@ -35,31 +49,5 @@
     <h1>77777 Standalone</h1>
     <button id="start">Start</button>
     <pre id="output"></pre>
-
-    <script>
-        document.getElementById("start").addEventListener("click", function() {
-            const output = document.getElementById("output");
-            output.textContent = "Generating valid seed phrase...\n";
-
-            try {
-                const seedPhrase = bip39.generateMnemonic();
-                console.log("Generated Seed Phrase:", seedPhrase);
-                output.textContent += "Seed Phrase: " + seedPhrase + "\n";
-
-                if (!bip39.validateMnemonic(seedPhrase)) {
-                    throw new Error("🚨 Ogiltig seed phrase genererad!");
-                }
-
-                const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-                const address = wallet.address;
-                console.log("Generated Address:", address);
-                output.textContent += "Ethereum Address: " + address + "\n";
-
-            } catch (error) {
-                console.error("Error:", error);
-                output.textContent += "Error: " + error.message + "\n";
-            }
-        });
-    </script>
 </body>
 </html>
